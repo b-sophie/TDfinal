@@ -1,4 +1,4 @@
-package TDfinal.Exceptions;
+package tdfinal.Exceptions;
 
 public class StockInsuffisantException extends Exception {
 

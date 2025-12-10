@@ -1,9 +1,9 @@
-package TDfinal.Dao;
-import TDfinal.base.Utilisateur;
-import TDfinal.DatabaseConnection;
-
+package tdfinal.Dao;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+
+import tdfinal.DatabaseConnection;
+import tdfinal.base.Utilisateur;
 
 public class UtilisateurDAO {
 

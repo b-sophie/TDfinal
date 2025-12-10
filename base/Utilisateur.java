@@ -1,4 +1,4 @@
-package TDfinal.base;
+package tdfinal.base;
 
 public class Utilisateur {
     private String pseudo;

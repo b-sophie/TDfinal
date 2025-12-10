@@ -1,14 +1,14 @@
-package TDfinal.Dao;
-import TDfinal.base.Emprunt;
-import TDfinal.DatabaseConnection;
-import TDfinal.Exceptions.NbEmprunt;
-import TDfinal.Exceptions.StockInsuffisantException;
-import TDfinal.base.Livre;
-import TDfinal.base.Utilisateur;
-
+package tdfinal.Dao;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import tdfinal.DatabaseConnection;
+import tdfinal.Exceptions.NbEmprunt;
+import tdfinal.Exceptions.StockInsuffisantException;
+import tdfinal.base.Emprunt;
+import tdfinal.base.Livre;
+import tdfinal.base.Utilisateur;
 
 public class EmpruntDAO {
     public int countEmpruntsUtilisateur(Utilisateur user) {

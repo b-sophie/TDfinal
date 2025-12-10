@@ -1,0 +1,43 @@
+import sqlite3
+import random
+
+Connexion à la base de données
+conn = sqlite3.connect('/c:/Users/buyde/Documents/bibliotheque/TDfinal/test.sqlite')
+cursor = conn.cursor()
+
+Création de la table
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS livres (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    nom TEXT NOT NULL,
+    auteur TEXT NOT NULL,
+    stock INTEGER NOT NULL
+)
+''')
+
+tritres = [
+    "Le Seigneur des Anneaux", "1984", "Le Hobbit", "Fondation", "Dune",
+    "Harry Potter", "Hunger Games", "Twilight", "Le Trône de Fer", "Eragon",
+    "Le Monde de Narnia", "Les Misérables", "Notre-Dame de Reims", "Germinal", "L'Assommoir",
+    "L'Éducation Sentimentale", "Madame Bovary", "Le Rouge et le Noir", "Le Père Goriot", "Balzac"
+]
+
+auteurs = [
+    "J.R.R. Tolkien", "George Orwell", "Isaac Asimov", "Frank Herbert", "J.K. Rowling",
+    "Suzanne Collins", "Stephenie Meyer", "George R.R. Martin", "Christopher Paolini", "C.S. Lewis",
+    "Victor Hugo", "Émile Zola", "Gustave Flaubert", "Stendhal", "Honoré de Balzac",
+    "Alexandre Dumas", "Jules Verne", "André Gide", "Romain Rolland", "Marcel Proust"
+]
+
+# Génération de 100 entrées
+for i in range(100):
+    nom = random.choice(noms) + f" (Édition {i+1})"
+    auteur = random.choice(auteurs)
+    stock = random.randint(1, 50)
+    cursor.execute('INSERT INTO livres (nom, auteur, stock) VALUES (?, ?, ?)',
+                   (nom, auteur, stock))
+
+conn.commit()
+conn.close()
+
+print("Base de données avec 100 livres")
