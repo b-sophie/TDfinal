@@ -2,7 +2,7 @@ package com.buydens.Library;
 
 public class Book {
 	private static int nextId = 1;
-	private String id;
+	private int id;
 	private String title;
 	private String author;
 	private int stock;
@@ -39,10 +39,14 @@ public class Book {
 		this.description = description;
 	}
 
-	
+    public Book(String title, String author, int stock) {
+        this.title = title;
+        this.author = author;
+        this.stock = stock;
+    }	
 
 
-	public String getId() {
+	public int getId() {
 		return id;
 	}
 

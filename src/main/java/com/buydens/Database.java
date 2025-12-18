@@ -70,7 +70,6 @@ public class Database {
     );
 """;
 
-
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {
 

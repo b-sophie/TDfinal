@@ -20,10 +20,10 @@ public class DebugDB {
                     System.out.println("Backup created: library.db.bak");
                 }
                 try (java.sql.Connection conn = Database.connect();
-                     java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE books SET available = ?")) {
+                     java.sql.PreparedStatement ps = conn.prepareStatement("UPDATE books SET stock = ?")) {
                     ps.setInt(1, val);
                     int updated = ps.executeUpdate();
-                    System.out.println("Updated " + updated + " rows to available=" + val);
+                    System.out.println("Updated " + updated + " rows to stock=" + val);
                 }
             } catch (Exception e) {
                 System.out.println("Error resetting stock: " + e.getMessage());
