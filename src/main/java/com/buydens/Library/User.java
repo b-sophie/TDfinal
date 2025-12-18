@@ -3,6 +3,7 @@ package com.buydens.Library;
 import java.util.Objects;
 
 public class User {
+    private static long idCounter = 0;
     private int id;
     private String pseudo;
     private String mdp;
@@ -14,6 +15,14 @@ public User(int id, String pseudo, String mdp, String role) {
     this.mdp=mdp;
     this.role=role;
 }
+
+public User(String pseudo, String mdp, String role) {
+    this.id=(int) idCounter++;
+    this.pseudo=pseudo;
+    this.mdp=mdp;
+    this.role=role;
+}
+
 public int getId() {
         return id;
     }

@@ -2,6 +2,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "DebugBorrow",
+            "request": "launch",
+            "mainClass": "com.buydens.DebugBorrow",
+            "projectName": "library-manager"
+        },
+        {
+            "type": "java",
             "name": "Main",
             "request": "launch",
             "mainClass": "com.buydens.Main",

@@ -19,66 +19,76 @@ public class App extends Application {
     private User currentUser;
     private Label lentCountLabel;
 
+    // Retrieve the logged-in user
     public void setCurrentUser(User user) {
         this.currentUser = user;
+        // this.currentUser = new User("admin", "adminpass", "ADMIN");
     }
 
     @Override
+    // public void start(Stage stage) {
     public void start(Stage stage) {
+        
+        this.currentUser = new User("admin", "adminpass", "ADMIN");
+
         VBox root = new VBox(20);
         root.setPadding(new javafx.geometry.Insets(20));
 
-        
+        //------------------------------------------------------------------------------------------
+        // Top bar with welcome and logout
         Label welcomeLabel = new Label("Bienvenue, " + currentUser.getPseudo());
         welcomeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
 
-        Button logoutButton = new Button("Se Déconnecter");
+        Button logoutButton = new Button("Log Out");
+        logoutButton.setStyle("-fx-background-color: linear-gradient(90deg, #ff5252, #ffb300); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 8 28; -fx-font-size: 15px; -fx-effect: none; -fx-border-width: 0;");
+        logoutButton.setOnMouseEntered(ev -> logoutButton.setStyle("-fx-background-color: linear-gradient(90deg, #ff7043, #ffd740); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 8 28; -fx-font-size: 15px; -fx-effect: none; -fx-border-width: 0; -fx-cursor: hand;"));
+        logoutButton.setOnMouseExited(ev -> logoutButton.setStyle("-fx-background-color: linear-gradient(90deg, #ff5252, #ffb300); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 8 28; -fx-font-size: 15px; -fx-effect: none; -fx-border-width: 0;"));
         HBox topBar = new HBox();
         topBar.setAlignment(Pos.CENTER_LEFT);
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         topBar.getChildren().addAll(welcomeLabel, spacer, logoutButton);
 
+        //------------------------------------------------------------------------------------------
+        // Top statistics squares
         HBox statsBox = new HBox(20);
         statsBox.setAlignment(Pos.CENTER);
 
-        StackPane totalPane = createStatPane("Total Livres", String.valueOf(MainController.countBooks()), "#4CAF50");
+        StackPane totalPane = createStatPane("Total Books", String.valueOf(MainController.countBooks()), "#4CAF50");
 
         
-        StackPane lentPane = createStatPane("Empruntés", String.valueOf(ManagerEmprunt.countEmpruntsForUser(currentUser)), "#2196F3");
+        StackPane lentPane = createStatPane("Borrowed", String.valueOf(ManagerEmprunt.countEmpruntsForUser(currentUser)), "#2196F3");
         
         lentCountLabel = (Label) ((VBox) lentPane.getChildren().get(1)).getChildren().get(0);
 
-        StackPane overduePane = createStatPane("En retard", "0", "#F44336");
-
+        StackPane overduePane = createStatPane("Overdue", "0", "#F44336");
         statsBox.getChildren().addAll(totalPane, lentPane, overduePane);
 
         
         VBox actionBox = new VBox(10);
         // actionBox.setAlignment(Pos.CENTER_LEFT);
 
-
+        //------------------------------------------------------------------------------------------
+        // Box for borrow/return/add
         HBox borrowBox = new HBox(10);
         TextField borrowField = new TextField();
-        borrowField.setPromptText("Nom du livre à emprunter");
-        Button borrowButton = new Button("Emprunter");
+        borrowField.setPromptText("Name of the book to borrow");
+        Button borrowButton = new Button("Borrow");
         Label borrowResult = new Label();
         borrowBox.getChildren().addAll(borrowField, borrowButton);
         borrowBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox returnBox = new HBox(10);
         TextField returnField = new TextField();
-        returnField.setPromptText("Nom du livre à rendre");
-        Button returnButton = new Button("Rendre");
+        returnField.setPromptText("Name of the book to return");
+        Button returnButton = new Button("Return");
         Label returnResult = new Label();
         returnBox.getChildren().addAll(returnField, returnButton);
         returnBox.setAlignment(Pos.CENTER_LEFT);
 
-        
-
         HBox addBox = new HBox(10);
         // TextField addField = new TextField();
-        Button addButton = new Button("Ajouter");
+        Button addButton = new Button("Add new Book");
         addBox.getChildren().addAll(addButton);
         addBox.setAlignment(Pos.CENTER_LEFT);   
 
@@ -90,27 +100,28 @@ public class App extends Application {
             actionBox.getChildren().addAll(borrowBox, borrowResult, returnBox, returnResult);
         }
 
-        // livres
+        // ------------------------------------------------------------------------------------------
+        // Book list area
         ScrollPane booksScroll = new ScrollPane();
         booksScroll.setFitToWidth(true);
         booksScroll.setPrefHeight(450);
         VBox booksContainer = createBookCards(MainController.loadBooks());
         booksScroll.setContent(booksContainer);
-
+        // Displat options related to this Book
         addButton.setOnAction(e -> {
             Stage addStage = new Stage();
             TextField titleField = new TextField();
-            titleField.setPromptText("Titre du livre");
+            titleField.setPromptText("Title");
             TextField authorField = new TextField();
-            authorField.setPromptText("Auteur du livre");
+            authorField.setPromptText("Author");
             TextField stockField = new TextField();
-            stockField.setPromptText("Stock initial");
-            Button saveButton = new Button("Enregistrer");
+            stockField.setPromptText("Initial Stock");
+            Button saveButton = new Button("Save");
             VBox addRoot = new VBox(10, titleField, authorField, stockField, saveButton);
             addRoot.setPadding(new javafx.geometry.Insets(20));
             Scene addScene = new Scene(addRoot, 300, 250);
             addStage.setScene(addScene);
-            addStage.setTitle("Ajout d'un Livre");
+            addStage.setTitle("Add a Book");
             addStage.setScene(addScene);
             addStage.show();
             saveButton.setOnAction(ev -> {
@@ -229,30 +240,99 @@ public class App extends Application {
         for (Book b : books) {
             HBox card = new HBox(15);
             card.setPadding(new javafx.geometry.Insets(10));
-            card.setStyle("-fx-background-color: #f5f5f5; -fx-background-radius: 12; -fx-effect: dropshadow(gaussian, #bbb, 4, 0, 0, 2);");
+            card.setStyle("-fx-background-color: linear-gradient(90deg, #f5f5f5 80%, #e3f2fd 100%); -fx-background-radius: 16; -fx-cursor: hand;");
             card.setAlignment(Pos.CENTER_LEFT);
+            card.setMinHeight(70);
 
             Rectangle colorBar = new Rectangle(8, 60);
             colorBar.setArcWidth(8);
             colorBar.setArcHeight(8);
-            colorBar.setFill(Color.valueOf("#4CAF50"));
+            colorBar.setFill(b.getStock() > 0 ? Color.valueOf("#4CAF50") : Color.valueOf("#BDBDBD"));
 
             VBox info = new VBox(5);
             Label title = new Label(b.getTitle());
-            title.setStyle("-fx-font-size: 16px; -fx-font-weight: bold;");
+            title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #222;");
             Label author = new Label("by " + b.getAuthor());
+            author.setStyle("-fx-text-fill: #666;");
             Label stock = new Label("Stock: " + b.getStock());
+            stock.setStyle("-fx-text-fill: #1976D2; -fx-font-weight: bold;");
 
             if (b.getStock() <= 0) {
-                card.setOpacity(0.6);
+                card.setOpacity(0.5);
                 Label out = new Label("(Indisponible)");
-                out.setStyle("-fx-text-fill: #c00; -fx-font-weight: bold;");
+                out.setStyle("-fx-text-fill: #c00; -fx-font-weight: bold; -fx-font-size: 13px;");
                 info.getChildren().addAll(title, author, stock, out);
             } else {
                 info.getChildren().addAll(title, author, stock);
             }
 
             card.getChildren().addAll(colorBar, info);
+
+            // Clickable: show borrow dialog if available
+            if (b.getStock() > 0) {
+                card.setOnMouseClicked(e -> {
+                    Dialog<ButtonType> dialog = new Dialog<>();
+                    dialog.setTitle("Emprunter le livre");
+                    dialog.setHeaderText(null);
+                    dialog.getDialogPane().setStyle("-fx-background-color: #fff; -fx-border-radius: 16; -fx-background-radius: 16;");
+                    dialog.getDialogPane().setPrefWidth(350);
+                    dialog.getDialogPane().setPrefHeight(220);
+
+                    VBox content = new VBox(18);
+                    content.setAlignment(Pos.CENTER);
+                    content.setStyle("-fx-padding: 24;");
+                    Label bookTitle = new Label(b.getTitle());
+                    bookTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
+                    Label bookAuthor = new Label("par " + b.getAuthor());
+                    bookAuthor.setStyle("-fx-font-size: 15px; -fx-text-fill: #666;");
+                    Label bookStock = new Label("Stock disponible: " + b.getStock());
+                    bookStock.setStyle("-fx-font-size: 14px; -fx-text-fill: #388E3C;");
+                    content.getChildren().addAll(bookTitle, bookAuthor, bookStock);
+
+                    dialog.getDialogPane().setContent(content);
+                    ButtonType borrowBtn = new ButtonType("Emprunter", ButtonBar.ButtonData.OK_DONE);
+                    ButtonType cancelBtn = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
+                    dialog.getDialogPane().getButtonTypes().addAll(borrowBtn, cancelBtn);
+
+                    // Custom styling for buttons (2025 look)
+                    Button okButton = (Button) dialog.getDialogPane().lookupButton(borrowBtn);
+                    if (okButton != null) {
+                        okButton.setStyle("-fx-background-color: linear-gradient(90deg, #1976D2, #64B5F6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 24;");
+                    }
+                    Button cancelButton = (Button) dialog.getDialogPane().lookupButton(cancelBtn);
+                    if (cancelButton != null) {
+                        cancelButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 24;");
+                    }
+
+                    dialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == borrowBtn) {
+                            // Try to borrow
+                            boolean success = ManagerEmprunt.emprunter(b, currentUser);
+                            if (success) {
+                                updateLentCount();
+                                refreshBookList((VBox) card.getParent());
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Succès");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Livre emprunté avec succès !");
+                                alert.getDialogPane().setStyle("-fx-background-color: #e3f2fd; -fx-font-size: 15px; -fx-background-radius: 12;");
+                                alert.showAndWait();
+                            } else {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Erreur");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Stock insuffisant ou déjà emprunté.");
+                                alert.getDialogPane().setStyle("-fx-background-color: #ffebee; -fx-font-size: 15px; -fx-background-radius: 12;");
+                                alert.showAndWait();
+                            }
+                        }
+                        return null;
+                    });
+
+                    dialog.showAndWait();
+                });
+            }
+
             vbox.getChildren().add(card);
         }
 

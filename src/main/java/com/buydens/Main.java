@@ -8,6 +8,7 @@ public class Main {
         System.out.println("System started.");
 
         javafx.application.Application.launch(PageConnexion.class, args);
+        // javafx.application.Application.launch(App.class, args);
     }
 }
 
