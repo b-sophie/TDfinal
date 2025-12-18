@@ -30,7 +30,17 @@ public class App extends Application {
     // public void start(Stage stage) {
     public void start(Stage stage) {
         
-        this.currentUser = new User("admin", "adminpass", "ADMIN");
+        // this.currentUser = new User("admin", "adminpass", "ADMIN");
+        
+        // Check for overdue books at startup
+        List<String> overdueBooks = ManagerEmprunt.checkAllOverdueBooks();
+        if (!overdueBooks.isEmpty()) {
+            System.out.println("\n===== LIVRES EN RETARD =====");
+            for (String message : overdueBooks) {
+                System.out.println(message);
+            }
+            System.out.println("============================\n");
+        }
 
         VBox root = new VBox(20);
         root.setPadding(new javafx.geometry.Insets(20));

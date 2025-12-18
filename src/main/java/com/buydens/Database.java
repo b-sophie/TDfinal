@@ -66,6 +66,7 @@ public class Database {
         user_id INTEGER NOT NULL,
         book_id TEXT NOT NULL,
         date_emprunt TEXT NOT NULL,
+        date_rendu TEXT,
         FOREIGN KEY(user_id) REFERENCES users(id),
         FOREIGN KEY(book_id) REFERENCES books(id)
     );
@@ -96,6 +97,24 @@ public class Database {
             }
             stmt.execute(createUsers);
             stmt.execute(createEmprunts);
+            
+            // Migration: ensure emprunts table has date_rendu column
+            try (ResultSet rs = stmt.executeQuery("PRAGMA table_info(emprunts);")) {
+                boolean hasDateRendu = false;
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    if ("date_rendu".equalsIgnoreCase(name)) hasDateRendu = true;
+                }
+                if (!hasDateRendu) {
+                    System.out.println("Adding missing 'date_rendu' column to emprunts table");
+                    stmt.execute("ALTER TABLE emprunts ADD COLUMN date_rendu TEXT");
+                    // Update existing rows to set date_rendu = date_emprunt + 1 day
+                    stmt.execute("UPDATE emprunts SET date_rendu = date(date_emprunt, '+1 day') WHERE date_rendu IS NULL");
+                }
+            } catch (SQLException e) {
+                System.out.println("Migration emprunts table (date_rendu) check error: " + e.getMessage());
+            }
+            
             stmt.execute(createRootAccount);
 
             System.out.println("Database initialized.");
