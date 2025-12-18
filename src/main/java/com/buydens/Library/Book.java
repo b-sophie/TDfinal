@@ -10,42 +10,24 @@ public class Book {
 	private String description;
 	private byte[] image;
 
-	public Book(String title, String author, int stock) {
+	public Book(String title, String author, int stock,String coverUrl, String description) {
 		this.id = nextId++;
 		this.title = title;
 		this.author = author;
 		this.stock = stock;
-		this.coverUrl = null;
-		this.description = null;
-		this.image = null;
+		this.coverUrl = coverUrl;
+		this.description = description;
 		System.out.println("Book created\nid: " + this.id + "\ntitle: " + this.title + "\nauthor: " + this.author + "\nstock: " + this.stock);
+
 	}
 
-	public Book(String title, String author, int stock, String coverUrl, String description) {
-		this.id = nextId++;
+	public Book(int id,String title, String author, int stock, String coverUrl, String description) {
+		this.id = id;
 		this.title = title;
 		this.author = author;
 		this.stock = stock;
 		this.coverUrl = coverUrl;
 		this.description = description;
-		this.image = null;
-	}
-
-	public Book(String title, String author, int stock, String coverUrl, String description, byte[] image) {
-		this.id = nextId++;
-		this.title = title;
-		this.author = author;
-		this.stock = stock;
-		this.coverUrl = coverUrl;
-		this.description = description;
-		this.image = image;
-	}
-	public byte[] getImage() {
-		return image;
-	}
-
-	public void setImage(byte[] image) {
-		this.image = image;
 	}
 
 
