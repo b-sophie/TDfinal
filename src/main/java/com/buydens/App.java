@@ -106,13 +106,12 @@ public class App extends Application {
         ScrollPane booksScroll = new ScrollPane();
         booksScroll.setFitToWidth(true);
         booksScroll.setPrefHeight(450);
+        // booksScroll.
         VBox booksContainer = createBookCards(MainController.loadBooks());
         booksScroll.setContent(booksContainer);
         // Displat options related to this Book
         addButton.setOnAction(e -> {
             Stage addStage = new Stage();
-            TextField linkField = new TextField();
-            linkField.setPromptText("Audible/Fnac Link");
             TextField titleField = new TextField();
             titleField.setPromptText("Title");
             TextField authorField = new TextField();
@@ -124,27 +123,13 @@ public class App extends Application {
             TextArea descField = new TextArea();
             descField.setPromptText("Description");
             descField.setPrefRowCount(3);
-            Button autofillButton = new Button("Auto-fill from Link");
             Button saveButton = new Button("Save");
-            VBox addRoot = new VBox(10, linkField, autofillButton, titleField, authorField, stockField, coverField, descField, saveButton);
+            VBox addRoot = new VBox(10, titleField, authorField, stockField, coverField, descField, saveButton);
             addRoot.setPadding(new javafx.geometry.Insets(20));
             Scene addScene = new Scene(addRoot, 400, 420);
             addStage.setScene(addScene);
             addStage.setTitle("Add a Book");
             addStage.show();
-
-            autofillButton.setOnAction(ev -> {
-                String link = linkField.getText().trim();
-                // Demo: If link contains 'audible', fill with Wise Man's Fear info
-                if (link.contains("audible")) {
-                    titleField.setText("The Wise Man's Fear");
-                    authorField.setText("Patrick Rothfuss");
-                    coverField.setText("https://m.media-amazon.com/images/I/51y5F1kQGGL._SL500_.jpg");
-                    descField.setText("Day two: the wise man’s fear. 'There are three things all wise men fear: the sea in storm, a night with no moon, and the anger of a gentle man.' My name is Kvothe. You may have heard of me. So begins a tale told from his own point of view—a story unequaled in fantasy literature. Now in The Wise Man’s Fear, Day Two of The Kingkiller Chronicle, Kvothe takes his first steps on the path of the hero and learns how difficult life can be when a man becomes a legend in his own time.");
-                } else {
-                    // Could add more logic for Fnac or other links
-                }
-            });
 
             saveButton.setOnAction(ev -> {
                 String title = titleField.getText().trim();
@@ -260,17 +245,39 @@ public class App extends Application {
             card.setAlignment(Pos.CENTER_LEFT);
             card.setMinHeight(110);
 
-            // Cover image (Audible style)
+            // Cover image 
             ImageView coverView = new ImageView();
-            String coverUrl = b.getCoverUrl();
-            System.out.println("Loading cover for book ID " + b.getId() + ": " + coverUrl);
-            if (coverUrl != null && !coverUrl.isEmpty()) {
+            boolean loaded = false;
+            byte[] imageBytes = b.getImage();
+            if (imageBytes != null && imageBytes.length > 0) {
                 try {
-                    coverView.setImage(new javafx.scene.image.Image(coverUrl, 80, 110, true, true));
+                    javafx.scene.image.Image img = new javafx.scene.image.Image(new java.io.ByteArrayInputStream(imageBytes), 80, 110, true, true);
+                    if (!img.isError() && img.getWidth() > 1) {
+                        coverView.setImage(img);
+                        loaded = true;
+                    }
                 } catch (Exception e) {
-                    coverView.setImage(new javafx.scene.image.Image("https://via.placeholder.com/80x110?text=No+Cover"));
+                    System.out.println("Exception loading image from DB: " + e.getMessage());
                 }
-            } else {
+            }
+            if (!loaded) {
+                String coverUrl = b.getCoverUrl();
+                System.out.println("Loading cover for book ID " + b.getId() + ": " + coverUrl);
+                if (coverUrl != null && !coverUrl.isEmpty()) {
+                    try {
+                        javafx.scene.image.Image img = new javafx.scene.image.Image(coverUrl, 80, 110, true, true);
+                        if (!img.isError() && img.getWidth() > 1) {
+                            coverView.setImage(img);
+                            loaded = true;
+                        } else {
+                            System.out.println("Failed to load image from URL: " + coverUrl + " (" + img.getException() + ")");
+                        }
+                    } catch (Exception e) {
+                        System.out.println("Exception loading image: " + e.getMessage());
+                    }
+                }
+            }
+            if (!loaded) {
                 coverView.setImage(new javafx.scene.image.Image("https://via.placeholder.com/80x110?text=No+Cover"));
             }
             coverView.setFitWidth(80);

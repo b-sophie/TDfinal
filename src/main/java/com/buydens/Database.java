@@ -38,7 +38,8 @@ public class Database {
                 author TEXT NOT NULL,
                 stock INTEGER NOT NULL DEFAULT 0,
                 coverUrl TEXT,
-                description TEXT
+                description TEXT,
+                image BLOB
             );
         """;
 
@@ -76,6 +77,20 @@ public class Database {
             //stmt.execute(deleteAllUsers);
             // stmt.execute("DROP TABLE IF EXISTS books");
             stmt.execute(createBooks);
+            // Migration: ensure books table has image column
+            try (ResultSet rs = stmt.executeQuery("PRAGMA table_info(books);")) {
+                boolean hasImage = false;
+                while (rs.next()) {
+                    String name = rs.getString("name");
+                    if ("image".equalsIgnoreCase(name)) hasImage = true;
+                }
+                if (!hasImage) {
+                    System.out.println("Adding missing 'image' column to books table");
+                    stmt.execute("ALTER TABLE books ADD COLUMN image BLOB");
+                }
+            } catch (SQLException e) {
+                System.out.println("Migration books table (image blob) check error: " + e.getMessage());
+            }
             stmt.execute(createUsers);
             stmt.execute(createEmprunts);
             stmt.execute(createRootAccount);

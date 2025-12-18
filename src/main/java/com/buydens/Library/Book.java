@@ -8,6 +8,7 @@ public class Book {
 	private int stock;
 	private String coverUrl;
 	private String description;
+	private byte[] image;
 
 	public Book(String title, String author, int stock) {
 		this.id = nextId++;
@@ -16,8 +17,8 @@ public class Book {
 		this.stock = stock;
 		this.coverUrl = null;
 		this.description = null;
+		this.image = null;
 		System.out.println("Book created\nid: " + this.id + "\ntitle: " + this.title + "\nauthor: " + this.author + "\nstock: " + this.stock);
-
 	}
 
 	public Book(String title, String author, int stock, String coverUrl, String description) {
@@ -27,6 +28,24 @@ public class Book {
 		this.stock = stock;
 		this.coverUrl = coverUrl;
 		this.description = description;
+		this.image = null;
+	}
+
+	public Book(String title, String author, int stock, String coverUrl, String description, byte[] image) {
+		this.id = nextId++;
+		this.title = title;
+		this.author = author;
+		this.stock = stock;
+		this.coverUrl = coverUrl;
+		this.description = description;
+		this.image = image;
+	}
+	public byte[] getImage() {
+		return image;
+	}
+
+	public void setImage(byte[] image) {
+		this.image = image;
 	}
 
 
