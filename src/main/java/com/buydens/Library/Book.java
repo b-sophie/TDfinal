@@ -9,18 +9,8 @@ public class Book {
 	private String coverUrl;
 	private String description;
 
-	public Book(int idNoIncr, String title, String author, int stock) {
-		this.id = String.valueOf(0);
-		this.title = title;
-		this.author = author;
-		this.stock = stock;
-		this.coverUrl = null;
-		this.description = null;
-		System.out.println("Book created\nid: " + this.id + "\ntitle: " + this.title + "\nauthor: " + this.author + "\nstock: " + this.stock);
-	}
-
 	public Book(String title, String author, int stock) {
-		this.id = String.valueOf(nextId++);
+		this.id = nextId++;
 		this.title = title;
 		this.author = author;
 		this.stock = stock;
@@ -31,7 +21,7 @@ public class Book {
 	}
 
 	public Book(String title, String author, int stock, String coverUrl, String description) {
-		this.id = String.valueOf(nextId++);
+		this.id = nextId++;
 		this.title = title;
 		this.author = author;
 		this.stock = stock;
@@ -39,11 +29,6 @@ public class Book {
 		this.description = description;
 	}
 
-    public Book(String title, String author, int stock) {
-        this.title = title;
-        this.author = author;
-        this.stock = stock;
-    }	
 
 
 	public int getId() {

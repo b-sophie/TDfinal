@@ -60,7 +60,7 @@ public class ManagerEmprunt {
         try (Connection conn = Database.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, user.getId());
-            ps.setString(2, book.getId());
+            ps.setInt(2, book.getId());
             ps.setString(3, LocalDate.now().toString());
             ps.executeUpdate();
 
@@ -86,7 +86,7 @@ public class ManagerEmprunt {
         try (Connection conn = Database.connect();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, user.getId());
-            ps.setString(2, book.getId());
+            ps.setInt(2, book.getId());
             int deleted = ps.executeUpdate();
             if (deleted == 0) return false; // pas emprunt trouvé
         } catch (SQLException e) {
