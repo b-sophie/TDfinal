@@ -8,8 +8,8 @@ public class Main {
         MainController.populateBooks(); 
         System.out.println("System started.");
 
-        // javafx.application.Application.launch(PageConnexion.class, args);
-        javafx.application.Application.launch(App.class, args);
+        javafx.application.Application.launch(PageConnexion.class, args);
+        // javafx.application.Application.launch(App.class, args);
     }
 }
 

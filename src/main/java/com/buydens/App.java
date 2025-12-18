@@ -22,8 +22,8 @@ public class App extends Application {
 
     // Retrieve the logged-in user
     public void setCurrentUser(User user) {
-        // this.currentUser = user;
-        this.currentUser = new User("admin", "adminpass", "ADMIN");
+        this.currentUser = user;
+        // this.currentUser = new User("admin", "adminpass", "ADMIN");
     }
 
     @Override
