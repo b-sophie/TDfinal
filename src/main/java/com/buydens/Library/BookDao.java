@@ -19,7 +19,7 @@ public class BookDao {
     }
 
     public static void insert(Book book) {
-        String sql = "INSERT OR IGNORE INTO books(id, title, author, available) VALUES(?,?,?,?)";
+        String sql = "INSERT OR IGNORE INTO books( title, author, stock) VALUES(?,?,?)";
         //String id = "B" + System.currentTimeMillis();
         try (Connection c = com.buydens.Database.connect();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -27,10 +27,10 @@ public class BookDao {
             pstmt.setString(2, title);
             pstmt.setString(3, author);
             pstmt.setInt(4, stock);*/
-            ps.setString(1, book.getId());
-            ps.setString(2, book.getTitle());
-            ps.setString(3, book.getAuthor());
-            ps.setInt(4, book.getStock());
+            //ps.setString(1, book.getId());
+            ps.setString(1, book.getTitle());
+            ps.setString(2, book.getAuthor());
+            ps.setInt(3, book.getStock());
             ps.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -46,10 +46,10 @@ public class BookDao {
 
             while (rs.next()) {
                 books.add(new Book(
-                    0,
+                    rs.getInt("id"),
                     rs.getString("title"),
                     rs.getString("author"),
-                    rs.getInt("available")
+                    rs.getInt("stock")
                 ));
             }
 
@@ -72,7 +72,7 @@ public class BookDao {
             System.out.println(e.getMessage());
         }*/
     public static boolean updateStock(String bookId, int stock) {
-        String sql = "UPDATE books SET available = ? WHERE id = ?";
+        String sql = "UPDATE books SET stock = ? WHERE id = ?";
         try (Connection c = Database.connect();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, stock);
@@ -94,7 +94,7 @@ public class BookDao {
                 return new Book(
                     rs.getString("title"),
                     rs.getString("author"),
-                    rs.getInt("available")
+                    rs.getInt("stock")
                 );
             }
         }

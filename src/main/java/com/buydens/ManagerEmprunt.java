@@ -63,6 +63,8 @@ public class ManagerEmprunt {
             ps.setString(2, book.getId());
             ps.setString(3, LocalDate.now().toString());
             ps.executeUpdate();
+
+            
         } catch (SQLException e) {
             e.printStackTrace();
             return false;

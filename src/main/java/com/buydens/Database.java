@@ -31,12 +31,17 @@ public class Database {
     }
 
     public static void initialize() {
-        String createBooks = "CREATE TABLE IF NOT EXISTS books (" +
-                "id TEXT PRIMARY KEY, " +
-                "title TEXT NOT NULL, " +
-                "author TEXT NOT NULL, " +
-                "available INTEGER NOT NULL" +
-                ");";
+        String createBooks = """
+            CREATE TABLE IF NOT EXISTS books (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL,
+            stock INTEGER NOT NULL
+            );
+        """;
+
+
+
 
         String createUsers = """
             CREATE TABLE IF NOT EXISTS users (
@@ -65,7 +70,6 @@ public class Database {
         FOREIGN KEY(book_id) REFERENCES books(id)
     );
 """;
-
 
         try (Connection conn = connect();
              Statement stmt = conn.createStatement()) {

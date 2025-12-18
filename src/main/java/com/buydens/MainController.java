@@ -11,15 +11,16 @@ public class MainController {
 
     public static void populateBooks() {
 
-        BookDao.deleteAll();
+    BookDao.deleteAll();
 
-        if (!BookDao.findAll().isEmpty()) return;
+    BookDao.insert(new Book("1984", "George Orwell", 3));
+    BookDao.insert(new Book("Le Petit Prince", "Antoine de Saint-Exupéry", 5));
+    BookDao.insert(new Book("L'Étranger", "Albert Camus", 2));
+    BookDao.insert(new Book("Harry Potter", "J.K. Rowling", 4));
 
-        BookDao.insert(new Book("1984", "George Orwell", 3));
-        BookDao.insert(new Book("Le Petit Prince", "Antoine de Saint-Exupéry", 5));
-        BookDao.insert(new Book("L'Étranger", "Albert Camus", 2));
-        BookDao.insert(new Book("Harry Potter", "J.K. Rowling", 4));
-    }
+    System.out.println("Books inserted: " + BookDao.findAll().size());
+}
+
 
     public static List<Book> loadBooks() {
         return BookDao.findAll();
