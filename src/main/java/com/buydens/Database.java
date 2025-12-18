@@ -31,12 +31,16 @@ public class Database {
     }
 
     public static void initialize() {
-        String createBooks = "CREATE TABLE IF NOT EXISTS books (" +
-                "id TEXT PRIMARY KEY, " +
-                "title TEXT NOT NULL, " +
-                "author TEXT NOT NULL, " +
-                "available INTEGER NOT NULL" +
-                ");";
+        String createBooks = """
+            CREATE TABLE IF NOT EXISTS books (
+                id TEXT PRIMARY KEY,
+                title TEXT NOT NULL,
+                author TEXT NOT NULL,
+                stock INTEGER NOT NULL DEFAULT 0,
+                coverUrl TEXT,
+                description TEXT
+            );
+        """;
 
         String createUsers = """
             CREATE TABLE IF NOT EXISTS users (
@@ -71,63 +75,17 @@ public class Database {
              Statement stmt = conn.createStatement()) {
 
             //stmt.execute(deleteAllUsers);
+            stmt.execute("DROP TABLE IF EXISTS books");
             stmt.execute(createBooks);
             stmt.execute(createUsers);
             stmt.execute(createEmprunts);
             stmt.execute(createRootAccount);
 
-            // Migration: ensure users table has an 'mdp' column (legacy DBs used 'password')
-            try (ResultSet rs = stmt.executeQuery("PRAGMA table_info(users);")) {
-                boolean hasMdp = false;
-                boolean hasPassword = false;
-                while (rs.next()) {
-                    String name = rs.getString("name");
-                    if ("mdp".equalsIgnoreCase(name)) hasMdp = true;
-                    if ("password".equalsIgnoreCase(name)) hasPassword = true;
-                }
-                if (!hasMdp) {
-                    if (hasPassword) {
-                        System.out.println("Migrating users table: adding 'mdp' column and copying from 'password'");
-                    } else {
-                        System.out.println("Adding missing 'mdp' column to users table");
-                    }
-                    stmt.execute("ALTER TABLE users ADD COLUMN mdp TEXT");
-                    if (hasPassword) {
-                        try {
-                            stmt.execute("UPDATE users SET mdp = password");
-                        } catch (SQLException ex) {
-                            System.out.println("Migration copy warning: " + ex.getMessage());
-                        }
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println("Migration check error: " + e.getMessage());
-            }
-
-            // Migration: ensure users table has a 'role' column (newer versions expect role)
-            try (ResultSet rs2 = stmt.executeQuery("PRAGMA table_info(users);")) {
-                boolean hasrole = false;
-                while (rs2.next()) {
-                    String name = rs2.getString("name");
-                    if ("role".equalsIgnoreCase(name)) hasrole = true;
-                }
-                if (!hasrole) {
-                    System.out.println("Adding missing 'role' column to users table");
-                    try {
-                        stmt.execute("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'User'");
-                        stmt.execute("UPDATE users SET role = 'User' WHERE role IS NULL");
-                    } catch (SQLException ex) {
-                        System.out.println("Migration role error: " + ex.getMessage());
-                    }
-                }
-            } catch (SQLException e) {
-                System.out.println("Migration role check error: " + e.getMessage());
-            }
-
             System.out.println("Database initialized.");
-
-        } catch (SQLException e) {
+        } 
+        catch (SQLException e) {
             System.out.println("Database error: " + e.getMessage());
         }
     }
 }
+

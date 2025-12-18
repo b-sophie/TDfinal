@@ -7,6 +7,7 @@ import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
@@ -21,8 +22,8 @@ public class App extends Application {
 
     // Retrieve the logged-in user
     public void setCurrentUser(User user) {
-        this.currentUser = user;
-        // this.currentUser = new User("admin", "adminpass", "ADMIN");
+        // this.currentUser = user;
+        this.currentUser = new User("admin", "adminpass", "ADMIN");
     }
 
     @Override
@@ -57,12 +58,12 @@ public class App extends Application {
         StackPane totalPane = createStatPane("Total Books", String.valueOf(MainController.countBooks()), "#4CAF50");
 
         
-        StackPane lentPane = createStatPane("Borrowed", String.valueOf(ManagerEmprunt.countEmpruntsForUser(currentUser)), "#2196F3");
+        // StackPane lentPane = createStatPane("Borrowed", String.valueOf(ManagerEmprunt.countEmpruntsForUser(currentUser)), "#2196F3");
         
-        lentCountLabel = (Label) ((VBox) lentPane.getChildren().get(1)).getChildren().get(0);
+        // lentCountLabel = (Label) ((VBox) lentPane.getChildren().get(1)).getChildren().get(0);
 
         StackPane overduePane = createStatPane("Overdue", "0", "#F44336");
-        statsBox.getChildren().addAll(totalPane, lentPane, overduePane);
+        // statsBox.getChildren().addAll(totalPane, lentPane, overduePane);
 
         
         VBox actionBox = new VBox(10);
@@ -110,20 +111,41 @@ public class App extends Application {
         // Displat options related to this Book
         addButton.setOnAction(e -> {
             Stage addStage = new Stage();
+            TextField linkField = new TextField();
+            linkField.setPromptText("Audible/Fnac Link");
             TextField titleField = new TextField();
             titleField.setPromptText("Title");
             TextField authorField = new TextField();
             authorField.setPromptText("Author");
             TextField stockField = new TextField();
             stockField.setPromptText("Initial Stock");
+            TextField coverField = new TextField();
+            coverField.setPromptText("Cover Image URL");
+            TextArea descField = new TextArea();
+            descField.setPromptText("Description");
+            descField.setPrefRowCount(3);
+            Button autofillButton = new Button("Auto-fill from Link");
             Button saveButton = new Button("Save");
-            VBox addRoot = new VBox(10, titleField, authorField, stockField, saveButton);
+            VBox addRoot = new VBox(10, linkField, autofillButton, titleField, authorField, stockField, coverField, descField, saveButton);
             addRoot.setPadding(new javafx.geometry.Insets(20));
-            Scene addScene = new Scene(addRoot, 300, 250);
+            Scene addScene = new Scene(addRoot, 400, 420);
             addStage.setScene(addScene);
             addStage.setTitle("Add a Book");
-            addStage.setScene(addScene);
             addStage.show();
+
+            autofillButton.setOnAction(ev -> {
+                String link = linkField.getText().trim();
+                // Demo: If link contains 'audible', fill with Wise Man's Fear info
+                if (link.contains("audible")) {
+                    titleField.setText("The Wise Man's Fear");
+                    authorField.setText("Patrick Rothfuss");
+                    coverField.setText("https://m.media-amazon.com/images/I/51y5F1kQGGL._SL500_.jpg");
+                    descField.setText("Day two: the wise man’s fear. 'There are three things all wise men fear: the sea in storm, a night with no moon, and the anger of a gentle man.' My name is Kvothe. You may have heard of me. So begins a tale told from his own point of view—a story unequaled in fantasy literature. Now in The Wise Man’s Fear, Day Two of The Kingkiller Chronicle, Kvothe takes his first steps on the path of the hero and learns how difficult life can be when a man becomes a legend in his own time.");
+                } else {
+                    // Could add more logic for Fnac or other links
+                }
+            });
+
             saveButton.setOnAction(ev -> {
                 String title = titleField.getText().trim();
                 String author = authorField.getText().trim();
@@ -133,21 +155,15 @@ public class App extends Application {
                 } catch (NumberFormatException ex) {
                     stock = 0;
                 }
+                String cover = coverField.getText().trim();
+                String desc = descField.getText().trim();
                 if (!title.isEmpty() && !author.isEmpty() && stock > 0) {
-                    BookDao.insert(new Book(title, author, stock));
+                    BookDao.insert(new Book(title, author, stock, cover, desc)); // You may need to update Book class/DB
                     addStage.close();
                     refreshBookList(booksContainer);
                     System.out.println("Livre ajouté: " + title);
                 }
             });
-            String title = titleField.getText().trim();
-            if (!title.isEmpty()) {
-                BookDao.insert(new Book(title, "George Orwell", 3));
-                // MainController.addBook(newBook);
-                titleField.clear();
-                refreshBookList(booksContainer);
-                System.out.println("Livre ajouté: " + title);
-            }
         });
 
         logoutButton.setOnAction(e -> {
@@ -159,44 +175,44 @@ public class App extends Application {
             System.out.println("User logged out.");
         });
         // bouton emprunter
-        borrowButton.setOnAction(e -> {
-            String name = borrowField.getText().trim();
-            Book selected = MainController.loadBooks().stream()
-                    .filter(b -> b.getTitle().equalsIgnoreCase(name))
-                    .findFirst()
-                    .orElse(null);
+        // borrowButton.setOnAction(e -> {
+        //     String name = borrowField.getText().trim();
+        //     Book selected = MainController.loadBooks().stream()
+        //             .filter(b -> b.getTitle().equalsIgnoreCase(name))
+        //             .findFirst()
+        //             .orElse(null);
 
-            if (selected == null) {
-                borrowResult.setText("Livre introuvable !");
-            } else if (ManagerEmprunt.emprunter(selected, currentUser)) {
-                borrowResult.setText("Livre emprunté !");
-                borrowField.clear();
-                updateLentCount();
-                refreshBookList(booksContainer);
-            } else {
-                borrowResult.setText("Stock insuffisant");
-            }
-        });
+        //     if (selected == null) {
+        //         borrowResult.setText("Livre introuvable !");
+        //     } else if (ManagerEmprunt.emprunter(selected, currentUser)) {
+        //         borrowResult.setText("Livre emprunté !");
+        //         borrowField.clear();
+        //         updateLentCount();
+        //         refreshBookList(booksContainer);
+        //     } else {
+        //         borrowResult.setText("Stock insuffisant");
+        //     }
+        // });
 
         // bouton Rendre
-        returnButton.setOnAction(e -> {
-            String name = returnField.getText().trim();
-            Book selected = MainController.loadBooks().stream()
-                    .filter(b -> b.getTitle().equalsIgnoreCase(name))
-                    .findFirst()
-                    .orElse(null);
+        // returnButton.setOnAction(e -> {
+        //     String name = returnField.getText().trim();
+        //     Book selected = MainController.loadBooks().stream()
+        //             .filter(b -> b.getTitle().equalsIgnoreCase(name))
+        //             .findFirst()
+        //             .orElse(null);
 
-            if (selected == null) {
-                returnResult.setText("Livre introuvable !");
-            } else if (ManagerEmprunt.rendre(selected, currentUser)) {
-                returnResult.setText("Livre rendu !");
-                returnField.clear();
-                updateLentCount();
-                refreshBookList(booksContainer);
-            } else {
-                returnResult.setText("Vous n'avez pas emprunté ce livre");
-            }
-        });
+        //     if (selected == null) {
+        //         returnResult.setText("Livre introuvable !");
+        //     } else if (ManagerEmprunt.rendre(selected, currentUser)) {
+        //         returnResult.setText("Livre rendu !");
+        //         returnField.clear();
+        //         updateLentCount();
+        //         refreshBookList(booksContainer);
+        //     } else {
+        //         returnResult.setText("Vous n'avez pas emprunté ce livre");
+        //     }
+        // });
 
         root.getChildren().addAll(topBar, statsBox, actionBox, booksScroll);
 
@@ -207,10 +223,10 @@ public class App extends Application {
     }
 
     // mise à jour
-    private void updateLentCount() {
-        long count = ManagerEmprunt.countEmpruntsForUser(currentUser);
-        lentCountLabel.setText(String.valueOf(count));
-    }
+    // private void updateLentCount() {
+    //     long count = ManagerEmprunt.countEmpruntsForUser(currentUser);
+    //     lentCountLabel.setText(String.valueOf(count));
+    // }
 
     private StackPane createStatPane(String label, String value, String color) {
         StackPane pane = new StackPane();
@@ -238,35 +254,63 @@ public class App extends Application {
         vbox.setPadding(new javafx.geometry.Insets(10));
 
         for (Book b : books) {
-            HBox card = new HBox(15);
-            card.setPadding(new javafx.geometry.Insets(10));
-            card.setStyle("-fx-background-color: linear-gradient(90deg, #f5f5f5 80%, #e3f2fd 100%); -fx-background-radius: 16; -fx-cursor: hand;");
+            HBox card = new HBox(18);
+            card.setPadding(new javafx.geometry.Insets(12));
+            card.setStyle("-fx-background-color: linear-gradient(90deg, #fff 80%, #e3f2fd 100%); -fx-background-radius: 18; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, #e3f2fd, 8, 0.2, 0, 2);");
             card.setAlignment(Pos.CENTER_LEFT);
-            card.setMinHeight(70);
+            card.setMinHeight(110);
 
-            Rectangle colorBar = new Rectangle(8, 60);
-            colorBar.setArcWidth(8);
-            colorBar.setArcHeight(8);
-            colorBar.setFill(b.getStock() > 0 ? Color.valueOf("#4CAF50") : Color.valueOf("#BDBDBD"));
+            // Cover image (Audible style)
+            ImageView coverView = new ImageView();
+            String coverUrl = b.getCoverUrl();
+            System.out.println("Loading cover for book ID " + b.getId() + ": " + coverUrl);
+            if (coverUrl != null && !coverUrl.isEmpty()) {
+                try {
+                    coverView.setImage(new javafx.scene.image.Image(coverUrl, 80, 110, true, true));
+                } catch (Exception e) {
+                    coverView.setImage(new javafx.scene.image.Image("https://via.placeholder.com/80x110?text=No+Cover"));
+                }
+            } else {
+                coverView.setImage(new javafx.scene.image.Image("https://via.placeholder.com/80x110?text=No+Cover"));
+            }
+            coverView.setFitWidth(80);
+            coverView.setFitHeight(110);
+            coverView.setSmooth(true);
+            coverView.setStyle("-fx-effect: dropshadow(gaussian, #bdbdbd, 6, 0.2, 0, 2); -fx-background-radius: 8;");
 
-            VBox info = new VBox(5);
+            VBox info = new VBox(6);
             Label title = new Label(b.getTitle());
             title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #222;");
             Label author = new Label("by " + b.getAuthor());
-            author.setStyle("-fx-text-fill: #666;");
+            author.setStyle("-fx-text-fill: #666; -fx-font-size: 13px;");
             Label stock = new Label("Stock: " + b.getStock());
-            stock.setStyle("-fx-text-fill: #1976D2; -fx-font-weight: bold;");
+            stock.setStyle("-fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-font-size: 13px;");
+            Label desc = null;
+            if (b.getDescription() != null && !b.getDescription().isEmpty()) {
+                desc = new Label(b.getDescription());
+                desc.setStyle("-fx-text-fill: #444; -fx-font-size: 12px; -fx-padding: 4 0 0 0;");
+                desc.setWrapText(true);
+                desc.setMaxWidth(320);
+            }
 
             if (b.getStock() <= 0) {
                 card.setOpacity(0.5);
                 Label out = new Label("(Indisponible)");
                 out.setStyle("-fx-text-fill: #c00; -fx-font-weight: bold; -fx-font-size: 13px;");
-                info.getChildren().addAll(title, author, stock, out);
+                if (desc != null) {
+                    info.getChildren().addAll(title, author, stock, out, desc);
+                } else {
+                    info.getChildren().addAll(title, author, stock, out);
+                }
             } else {
-                info.getChildren().addAll(title, author, stock);
+                if (desc != null) {
+                    info.getChildren().addAll(title, author, stock, desc);
+                } else {
+                    info.getChildren().addAll(title, author, stock);
+                }
             }
 
-            card.getChildren().addAll(colorBar, info);
+            card.getChildren().addAll(coverView, info);
 
             // Clickable: show borrow dialog if available
             if (b.getStock() > 0) {
@@ -275,19 +319,35 @@ public class App extends Application {
                     dialog.setTitle("Emprunter le livre");
                     dialog.setHeaderText(null);
                     dialog.getDialogPane().setStyle("-fx-background-color: #fff; -fx-border-radius: 16; -fx-background-radius: 16;");
-                    dialog.getDialogPane().setPrefWidth(350);
-                    dialog.getDialogPane().setPrefHeight(220);
+                    dialog.getDialogPane().setPrefWidth(400);
+                    dialog.getDialogPane().setPrefHeight(320);
 
                     VBox content = new VBox(18);
                     content.setAlignment(Pos.CENTER);
                     content.setStyle("-fx-padding: 24;");
+                    ImageView dialogCover = new ImageView(coverView.getImage());
+                    dialogCover.setFitWidth(90);
+                    dialogCover.setFitHeight(120);
+                    dialogCover.setSmooth(true);
+                    dialogCover.setStyle("-fx-effect: dropshadow(gaussian, #bdbdbd, 8, 0.2, 0, 2); -fx-background-radius: 8;");
                     Label bookTitle = new Label(b.getTitle());
                     bookTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
                     Label bookAuthor = new Label("par " + b.getAuthor());
                     bookAuthor.setStyle("-fx-font-size: 15px; -fx-text-fill: #666;");
                     Label bookStock = new Label("Stock disponible: " + b.getStock());
                     bookStock.setStyle("-fx-font-size: 14px; -fx-text-fill: #388E3C;");
-                    content.getChildren().addAll(bookTitle, bookAuthor, bookStock);
+                    Label bookDesc = null;
+                    if (b.getDescription() != null && !b.getDescription().isEmpty()) {
+                        bookDesc = new Label(b.getDescription());
+                        bookDesc.setStyle("-fx-text-fill: #444; -fx-font-size: 13px; -fx-padding: 8 0 0 0;");
+                        bookDesc.setWrapText(true);
+                        bookDesc.setMaxWidth(320);
+                    }
+                    if (bookDesc != null) {
+                        content.getChildren().addAll(dialogCover, bookTitle, bookAuthor, bookStock, bookDesc);
+                    } else {
+                        content.getChildren().addAll(dialogCover, bookTitle, bookAuthor, bookStock);
+                    }
 
                     dialog.getDialogPane().setContent(content);
                     ButtonType borrowBtn = new ButtonType("Emprunter", ButtonBar.ButtonData.OK_DONE);
@@ -304,30 +364,30 @@ public class App extends Application {
                         cancelButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 24;");
                     }
 
-                    dialog.setResultConverter(dialogButton -> {
-                        if (dialogButton == borrowBtn) {
-                            // Try to borrow
-                            boolean success = ManagerEmprunt.emprunter(b, currentUser);
-                            if (success) {
-                                updateLentCount();
-                                refreshBookList((VBox) card.getParent());
-                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                                alert.setTitle("Succès");
-                                alert.setHeaderText(null);
-                                alert.setContentText("Livre emprunté avec succès !");
-                                alert.getDialogPane().setStyle("-fx-background-color: #e3f2fd; -fx-font-size: 15px; -fx-background-radius: 12;");
-                                alert.showAndWait();
-                            } else {
-                                Alert alert = new Alert(Alert.AlertType.ERROR);
-                                alert.setTitle("Erreur");
-                                alert.setHeaderText(null);
-                                alert.setContentText("Stock insuffisant ou déjà emprunté.");
-                                alert.getDialogPane().setStyle("-fx-background-color: #ffebee; -fx-font-size: 15px; -fx-background-radius: 12;");
-                                alert.showAndWait();
-                            }
-                        }
-                        return null;
-                    });
+                    // dialog.setResultConverter(dialogButton -> {
+                    //     if (dialogButton == borrowBtn) {
+                    //         // Try to borrow
+                    //         boolean success = ManagerEmprunt.emprunter(b, currentUser);
+                    //         if (success) {
+                    //             updateLentCount();
+                    //             refreshBookList((VBox) card.getParent());
+                    //             Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    //             alert.setTitle("Succès");
+                    //             alert.setHeaderText(null);
+                    //             alert.setContentText("Livre emprunté avec succès !");
+                    //             alert.getDialogPane().setStyle("-fx-background-color: #e3f2fd; -fx-font-size: 15px; -fx-background-radius: 12;");
+                    //             alert.showAndWait();
+                    //         } else {
+                    //             Alert alert = new Alert(Alert.AlertType.ERROR);
+                    //             alert.setTitle("Erreur");
+                    //             alert.setHeaderText(null);
+                    //             alert.setContentText("Stock insuffisant ou déjà emprunté.");
+                    //             alert.getDialogPane().setStyle("-fx-background-color: #ffebee; -fx-font-size: 15px; -fx-background-radius: 12;");
+                    //             alert.showAndWait();
+                    //         }
+                    //     }
+                    //     return null;
+                    // });
 
                     dialog.showAndWait();
                 });
