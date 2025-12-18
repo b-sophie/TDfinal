@@ -247,34 +247,19 @@ public class App extends Application {
 
             // Cover image 
             ImageView coverView = new ImageView();
+            String coverUrl = b.getCoverUrl();
             boolean loaded = false;
-            byte[] imageBytes = b.getImage();
-            if (imageBytes != null && imageBytes.length > 0) {
+            if (coverUrl != null && !coverUrl.isEmpty()) {
                 try {
-                    javafx.scene.image.Image img = new javafx.scene.image.Image(new java.io.ByteArrayInputStream(imageBytes), 80, 110, true, true);
+                    javafx.scene.image.Image img = new javafx.scene.image.Image(coverUrl, 80, 110, true, true);
                     if (!img.isError() && img.getWidth() > 1) {
                         coverView.setImage(img);
                         loaded = true;
+                    } else {
+                        System.out.println("Failed to load image from URL: " + coverUrl + " (" + img.getException() + ")");
                     }
                 } catch (Exception e) {
-                    System.out.println("Exception loading image from DB: " + e.getMessage());
-                }
-            }
-            if (!loaded) {
-                String coverUrl = b.getCoverUrl();
-                System.out.println("Loading cover for book ID " + b.getId() + ": " + coverUrl);
-                if (coverUrl != null && !coverUrl.isEmpty()) {
-                    try {
-                        javafx.scene.image.Image img = new javafx.scene.image.Image(coverUrl, 80, 110, true, true);
-                        if (!img.isError() && img.getWidth() > 1) {
-                            coverView.setImage(img);
-                            loaded = true;
-                        } else {
-                            System.out.println("Failed to load image from URL: " + coverUrl + " (" + img.getException() + ")");
-                        }
-                    } catch (Exception e) {
-                        System.out.println("Exception loading image: " + e.getMessage());
-                    }
+                    System.out.println("Exception loading image: " + e.getMessage());
                 }
             }
             if (!loaded) {
