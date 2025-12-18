@@ -223,10 +223,10 @@ public class App extends Application {
     }
 
     // mise à jour
-    // private void updateLentCount() {
-    //     long count = ManagerEmprunt.countEmpruntsForUser(currentUser);
-    //     lentCountLabel.setText(String.valueOf(count));
-    // }
+    private void updateLentCount() {
+        long count = ManagerEmprunt.countEmpruntsForUser(currentUser);
+        lentCountLabel.setText(String.valueOf(count));
+    }
 
     private StackPane createStatPane(String label, String value, String color) {
         StackPane pane = new StackPane();
@@ -364,30 +364,30 @@ public class App extends Application {
                         cancelButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 24;");
                     }
 
-                    // dialog.setResultConverter(dialogButton -> {
-                    //     if (dialogButton == borrowBtn) {
-                    //         // Try to borrow
-                    //         boolean success = ManagerEmprunt.emprunter(b, currentUser);
-                    //         if (success) {
-                    //             updateLentCount();
-                    //             refreshBookList((VBox) card.getParent());
-                    //             Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                    //             alert.setTitle("Succès");
-                    //             alert.setHeaderText(null);
-                    //             alert.setContentText("Livre emprunté avec succès !");
-                    //             alert.getDialogPane().setStyle("-fx-background-color: #e3f2fd; -fx-font-size: 15px; -fx-background-radius: 12;");
-                    //             alert.showAndWait();
-                    //         } else {
-                    //             Alert alert = new Alert(Alert.AlertType.ERROR);
-                    //             alert.setTitle("Erreur");
-                    //             alert.setHeaderText(null);
-                    //             alert.setContentText("Stock insuffisant ou déjà emprunté.");
-                    //             alert.getDialogPane().setStyle("-fx-background-color: #ffebee; -fx-font-size: 15px; -fx-background-radius: 12;");
-                    //             alert.showAndWait();
-                    //         }
-                    //     }
-                    //     return null;
-                    // });
+                    dialog.setResultConverter(dialogButton -> {
+                        if (dialogButton == borrowBtn) {
+                            // Try to borrow
+                            boolean success = ManagerEmprunt.emprunter(b, currentUser);
+                            if (success) {
+                                updateLentCount();
+                                refreshBookList((VBox) card.getParent());
+                                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                                alert.setTitle("Succès");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Livre emprunté avec succès !");
+                                alert.getDialogPane().setStyle("-fx-background-color: #e3f2fd; -fx-font-size: 15px; -fx-background-radius: 12;");
+                                alert.showAndWait();
+                            } else {
+                                Alert alert = new Alert(Alert.AlertType.ERROR);
+                                alert.setTitle("Erreur");
+                                alert.setHeaderText(null);
+                                alert.setContentText("Stock insuffisant ou déjà emprunté.");
+                                alert.getDialogPane().setStyle("-fx-background-color: #ffebee; -fx-font-size: 15px; -fx-background-radius: 12;");
+                                alert.showAndWait();
+                            }
+                        }
+                        return null;
+                    });
 
                     dialog.showAndWait();
                 });

@@ -44,6 +44,7 @@ public class BookDao {
              ResultSet rs = s.executeQuery(sql)) {
             while (rs.next()) {
                 books.add(new Book(
+                    rs.getInt("id"),
                     rs.getString("title"),
                     rs.getString("author"),
                     rs.getInt("stock"),
@@ -70,7 +71,7 @@ public class BookDao {
         }*/
 
     public static boolean updateStock(int bookId, int stock) {
-        String sql = "UPDATE books SET available = ? WHERE id = ?";
+        String sql = "UPDATE books SET stock = ? WHERE id = ?";
         try (Connection c = Database.connect();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, stock);
@@ -91,6 +92,7 @@ public class BookDao {
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
                 return new Book(
+                    rs.getInt("id"),
                     rs.getString("title"),
                     rs.getString("author"),
                     rs.getInt("stock"),
