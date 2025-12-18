@@ -302,13 +302,13 @@ public class App extends Application {
             
             returnScroll.setContent(returnContainer);
             
-            VBox root = new VBox(10);
-            root.setPadding(new javafx.geometry.Insets(20));
+            VBox returnRoot = new VBox(10);
+            returnRoot.setPadding(new javafx.geometry.Insets(20));
             Label headerLabel = new Label("Mes livres empruntés (" + borrowedBooks.size() + ")");
             headerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
-            root.getChildren().addAll(headerLabel, returnScroll);
+            returnRoot.getChildren().addAll(headerLabel, returnScroll);
             
-            Scene returnScene = new Scene(root, 850, 600);
+            Scene returnScene = new Scene(returnRoot, 850, 600);
             returnStage.setScene(returnScene);
             returnStage.show();
         });
