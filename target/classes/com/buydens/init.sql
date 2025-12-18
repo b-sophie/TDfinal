@@ -1,0 +1,6 @@
+CREATE TABLE users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pseudo TEXT UNIQUE NOT NULL,
+    mdp TEXT NOT NULL,
+    master TEXT NOT NULL DEFAULT 'User'
+);

@@ -1,0 +1,10 @@
+com\buydens\Main.class
+com\buydens\Library\User.class
+com\buydens\ManagerEmprunt.class
+com\buydens\DebugDB.class
+com\buydens\PageConnexion.class
+com\buydens\MainController.class
+com\buydens\Library\Book.class
+com\buydens\Library\Emprunt.class
+com\buydens\Database.class
+com\buydens\App.class
