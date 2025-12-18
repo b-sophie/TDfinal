@@ -71,21 +71,21 @@ public class App extends Application {
 
         //------------------------------------------------------------------------------------------
         // Box for borrow/return/add
-        HBox borrowBox = new HBox(10);
-        TextField borrowField = new TextField();
-        borrowField.setPromptText("Name of the book to borrow");
-        Button borrowButton = new Button("Borrow");
-        Label borrowResult = new Label();
-        borrowBox.getChildren().addAll(borrowField, borrowButton);
-        borrowBox.setAlignment(Pos.CENTER_LEFT);
+        // HBox borrowBox = new HBox(10);
+        // TextField borrowField = new TextField();
+        // borrowField.setPromptText("Name of the book to borrow");
+        // Button borrowButton = new Button("Borrow");
+        // Label borrowResult = new Label();
+        // borrowBox.getChildren().addAll(borrowField, borrowButton);
+        // borrowBox.setAlignment(Pos.CENTER_LEFT);
 
         HBox returnBox = new HBox(10);
-        TextField returnField = new TextField();
-        returnField.setPromptText("Name of the book to return");
         Button returnButton = new Button("Return");
         Label returnResult = new Label();
-        returnBox.getChildren().addAll(returnField, returnButton);
+        returnBox.getChildren().addAll(returnButton);
         returnBox.setAlignment(Pos.CENTER_LEFT);
+
+
 
         HBox addBox = new HBox(10);
         // TextField addField = new TextField();
@@ -94,11 +94,11 @@ public class App extends Application {
         addBox.setAlignment(Pos.CENTER_LEFT);   
 
         if ("ADMIN".equalsIgnoreCase(currentUser.getRole())) {
-            actionBox.getChildren().addAll(borrowBox, borrowResult, returnBox, returnResult, addBox);
+            actionBox.getChildren().addAll(returnBox, returnResult, addBox);
             System.out.println("Affichage des options admin pour " + currentUser.getPseudo());
         }
         else {
-            actionBox.getChildren().addAll(borrowBox, borrowResult, returnBox, returnResult);
+            actionBox.getChildren().addAll(returnBox, returnResult);
         }
 
         // ------------------------------------------------------------------------------------------
@@ -181,22 +181,136 @@ public class App extends Application {
 
         //bouton Rendre
         returnButton.setOnAction(e -> {
-            String name = returnField.getText().trim();
-            Book selected = MainController.loadBooks().stream()
-                    .filter(b -> b.getTitle().equalsIgnoreCase(name))
-                    .findFirst()
-                    .orElse(null);
-
-            if (selected == null) {
-                returnResult.setText("Livre introuvable !");
-            } else if (ManagerEmprunt.rendre(selected, currentUser)) {
-                returnResult.setText("Livre rendu !");
-                returnField.clear();
-                updateLentCount();
-                refreshBookList(booksContainer);
-            } else {
-                returnResult.setText("Vous n'avez pas emprunté ce livre");
+            List<Book> borrowedBooks = ManagerEmprunt.getBorrowedBooksForUser(currentUser);
+            
+            if (borrowedBooks.isEmpty()) {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Aucun emprunt");
+                alert.setHeaderText(null);
+                alert.setContentText("Vous n'avez aucun livre emprunté.");
+                alert.getDialogPane().setStyle("-fx-background-color: #e3f2fd; -fx-font-size: 15px; -fx-background-radius: 12;");
+                alert.showAndWait();
+                return;
             }
+            
+            // Create a dialog to show borrowed books
+            Stage returnStage = new Stage();
+            returnStage.setTitle("Mes livres empruntés");
+            
+            ScrollPane returnScroll = new ScrollPane();
+            returnScroll.setFitToWidth(true);
+            returnScroll.setPrefHeight(500);
+            returnScroll.setPrefWidth(800);
+            
+            VBox returnContainer = new VBox(15);
+            returnContainer.setPadding(new javafx.geometry.Insets(10));
+            
+            for (Book b : borrowedBooks) {
+                HBox card = new HBox(18);
+                card.setPadding(new javafx.geometry.Insets(12));
+                card.setStyle("-fx-background-color: linear-gradient(90deg, #fff 80%, #ffebee 100%); -fx-background-radius: 18; -fx-cursor: hand; -fx-effect: dropshadow(gaussian, #ffcdd2, 8, 0.2, 0, 2);");
+                card.setAlignment(Pos.CENTER_LEFT);
+                card.setMinHeight(110);
+
+                // Cover image
+                ImageView coverView = new ImageView();
+                String coverUrl = b.getCoverUrl();
+                boolean loaded = false;
+                if (coverUrl != null && !coverUrl.isEmpty()) {
+                    try {
+                        javafx.scene.image.Image img = new javafx.scene.image.Image(coverUrl, 80, 110, true, true);
+                        if (!img.isError() && img.getWidth() > 1) {
+                            coverView.setImage(img);
+                            loaded = true;
+                        }
+                    } catch (Exception ex) {
+                        System.out.println("Exception loading image: " + ex.getMessage());
+                    }
+                }
+                if (!loaded) {
+                    coverView.setImage(new javafx.scene.image.Image("https://via.placeholder.com/80x110?text=No+Cover"));
+                }
+                coverView.setFitWidth(80);
+                coverView.setFitHeight(110);
+                coverView.setSmooth(true);
+                coverView.setStyle("-fx-effect: dropshadow(gaussian, #bdbdbd, 6, 0.2, 0, 2); -fx-background-radius: 8;");
+
+                VBox info = new VBox(6);
+                Label title = new Label(b.getTitle());
+                title.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #222;");
+                Label author = new Label("by " + b.getAuthor());
+                author.setStyle("-fx-text-fill: #666; -fx-font-size: 13px;");
+                Label returnLabel = new Label("Cliquez pour rendre");
+                returnLabel.setStyle("-fx-text-fill: #c62828; -fx-font-weight: bold; -fx-font-size: 13px;");
+                
+                Label desc = null;
+                if (b.getDescription() != null && !b.getDescription().isEmpty()) {
+                    desc = new Label(b.getDescription());
+                    desc.setStyle("-fx-text-fill: #444; -fx-font-size: 12px; -fx-padding: 4 0 0 0;");
+                    desc.setWrapText(true);
+                    desc.setMaxWidth(320);
+                }
+
+                if (desc != null) {
+                    info.getChildren().addAll(title, author, returnLabel, desc);
+                } else {
+                    info.getChildren().addAll(title, author, returnLabel);
+                }
+
+                card.getChildren().addAll(coverView, info);
+
+                // Clickable: return the book
+                card.setOnMouseClicked(ev -> {
+                    Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
+                    confirmAlert.setTitle("Confirmer le retour");
+                    confirmAlert.setHeaderText(null);
+                    confirmAlert.setContentText("Voulez-vous rendre \"" + b.getTitle() + "\" ?");
+                    confirmAlert.getDialogPane().setStyle("-fx-background-color: #fff3e0; -fx-font-size: 15px; -fx-background-radius: 12;");
+                    
+                    confirmAlert.showAndWait().ifPresent(response -> {
+                        if (response == ButtonType.OK) {
+                            boolean success = ManagerEmprunt.rendre(b, currentUser);
+                            if (success) {
+                                updateLentCount();
+                                refreshBookList(booksContainer);
+                                returnContainer.getChildren().remove(card);
+                                
+                                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                                successAlert.setTitle("Succès");
+                                successAlert.setHeaderText(null);
+                                successAlert.setContentText("Livre rendu avec succès !");
+                                successAlert.getDialogPane().setStyle("-fx-background-color: #e8f5e9; -fx-font-size: 15px; -fx-background-radius: 12;");
+                                successAlert.showAndWait();
+                                
+                                if (returnContainer.getChildren().isEmpty()) {
+                                    returnStage.close();
+                                }
+                            } else {
+                                Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                                errorAlert.setTitle("Erreur");
+                                errorAlert.setHeaderText(null);
+                                errorAlert.setContentText("Erreur lors du retour du livre.");
+                                errorAlert.getDialogPane().setStyle("-fx-background-color: #ffebee; -fx-font-size: 15px; -fx-background-radius: 12;");
+                                errorAlert.showAndWait();
+                            }
+                        }
+                    });
+                });
+
+                returnContainer.getChildren().add(card);
+            }
+            
+            returnScroll.setContent(returnContainer);
+            
+            VBox root = new VBox(10);
+            root.setPadding(new javafx.geometry.Insets(20));
+            Label headerLabel = new Label("Mes livres empruntés (" + borrowedBooks.size() + ")");
+            headerLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
+            root.getChildren().addAll(headerLabel, returnScroll);
+            
+            Scene returnScene = new Scene(root, 850, 600);
+            returnStage.setScene(returnScene);
+            returnStage.show();
         });
 
         root.getChildren().addAll(topBar, statsBox, actionBox, booksScroll);
@@ -340,7 +454,7 @@ public class App extends Application {
                     } else {
                         content.getChildren().addAll(dialogCover, bookTitle, bookAuthor, bookStock);
                     }
-
+                    System.out.println("Preparing borrow dialog for book: " + b.getId());
                     dialog.getDialogPane().setContent(content);
                     ButtonType borrowBtn = new ButtonType("Emprunter", ButtonBar.ButtonData.OK_DONE);
                     ButtonType cancelBtn = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
@@ -359,6 +473,7 @@ public class App extends Application {
                     dialog.setResultConverter(dialogButton -> {
                         if (dialogButton == borrowBtn) {
                             // Try to borrow
+                            System.out.println("User " + currentUser.getId() + " attempting to borrow book " + b.getId());
                             boolean success = ManagerEmprunt.emprunter(b, currentUser);
                             if (success) {
                                 updateLentCount();

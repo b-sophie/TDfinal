@@ -10,16 +10,18 @@ public class BookDao {
     
     public static void deleteAll() {
         String sql = "DELETE FROM books";
+        String sql2 = "DELETE FROM emprunts"; // Clear emprunts first to avoid foreign key issues
         try (Connection c = Database.connect();
              Statement s = c.createStatement()) {
             s.executeUpdate(sql);
+            s.executeUpdate(sql2);
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
 
     public static void insert(Book book) {
-        String sql = "INSERT OR IGNORE INTO books(id, title, author, stock, coverUrl, description) VALUES(?,?,?,?,?)";
+        String sql = "INSERT OR IGNORE INTO books(id, title, author, stock, coverUrl, description) VALUES(?,?,?,?,?,?)";
         //String id = "B" + System.currentTimeMillis();
         try (Connection c = com.buydens.Database.connect();
              PreparedStatement ps = c.prepareStatement(sql)) {
@@ -27,28 +29,30 @@ public class BookDao {
             ps.setString(2, book.getTitle());
             ps.setString(3, book.getAuthor());
             ps.setInt(4, book.getStock());
-            ps.setString(4, book.getCoverUrl());
-            ps.setString(5, book.getDescription());
+            ps.setString(5, book.getCoverUrl());
+            ps.setString(6, book.getDescription());
             ps.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
-    public static List<Book> findAll() {
+        public static List<Book> findAll() {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT * FROM books";
-
+    
         try (Connection c = Database.connect();
              Statement s = c.createStatement();
              ResultSet rs = s.executeQuery(sql)) {
             while (rs.next()) {
-                books.add(new Book(
+                Book book = new Book(
                     rs.getString("title"),
                     rs.getString("author"),
                     rs.getInt("stock"),
                     rs.getString("coverUrl"),
                     rs.getString("description")
-                ));
+                );
+                book.setId(rs.getInt("id"));
+                books.add(book);
             }
         } catch (SQLException e) {
             System.out.println("Load books error: " + e.getMessage());
@@ -69,7 +73,7 @@ public class BookDao {
         }*/
 
     public static boolean updateStock(int bookId, int stock) {
-        String sql = "UPDATE books SET available = ? WHERE id = ?";
+        String sql = "UPDATE books SET stock = ? WHERE id = ?";
         try (Connection c = Database.connect();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, stock);
@@ -89,14 +93,15 @@ public class BookDao {
         ps.setInt(1, bookId);
         try (ResultSet rs = ps.executeQuery()) {
             if (rs.next()) {
-                return new Book(
+                Book book = new Book(
                     rs.getString("title"),
                     rs.getString("author"),
                     rs.getInt("stock"),
                     rs.getString("coverUrl"),
                     rs.getString("description")
-                    // rs.getInt("available")
                 );
+                book.setId(rs.getInt("id"));
+                return book;
             }
         }
     } catch (SQLException e) {

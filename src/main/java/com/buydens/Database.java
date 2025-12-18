@@ -76,7 +76,10 @@ public class Database {
 
             //stmt.execute(deleteAllUsers);
             // stmt.execute("DROP TABLE IF EXISTS books");
+            // stmt.execute("DROP TABLE IF EXISTS emprunts");
             stmt.execute(createBooks);
+            stmt.execute(createEmprunts);
+            stmt.execute(createUsers);
             // Migration: ensure books table has image column
             try (ResultSet rs = stmt.executeQuery("PRAGMA table_info(books);")) {
                 boolean hasImage = false;

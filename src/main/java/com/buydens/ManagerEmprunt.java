@@ -49,7 +49,28 @@ public class ManagerEmprunt {
 
     // Emprunter un livre
     public static boolean emprunter(Book book, User user) {
-        if (book == null || user == null || book.getStock() <= 0) return false;
+        System.out.println("\nAttempting to borrow book: " + book.getId() + " for user: " + user.getId());
+        if (book == null || user == null || book.getStock() <= 0) {
+            System.out.println("\nInvalid borrow attempt: book or user is null, or book stock is zero.");
+            return false;
+        }
+
+        // Vérifier si l'utilisateur a déjà emprunté ce livre
+        String checkSql = "SELECT COUNT(*) FROM emprunts WHERE user_id=? AND book_id=?";
+        try (Connection conn = Database.connect();
+            PreparedStatement ps = conn.prepareStatement(checkSql)) {
+            ps.setInt(1, user.getId());
+            ps.setInt(2, book.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+               if (rs.next() && rs.getInt(1) > 0) {
+                  System.out.println("\nUser has already borrowed this book.");
+                  return false;
+               }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
 
         // Décrémenter stock
         int newStock = book.getStock() - 1;
@@ -118,6 +139,35 @@ public class ManagerEmprunt {
             e.printStackTrace();
         }
         return 0;
+    }
+
+    // Récupérer tous les livres empruntés par un utilisateur
+    public static List<Book> getBorrowedBooksForUser(User user) {
+        List<Book> borrowedBooks = new ArrayList<>();
+        String sql = "SELECT b.* FROM books b " +
+                     "JOIN emprunts e ON b.id = e.book_id " +
+                     "WHERE e.user_id = ?";
+        
+        try (Connection conn = Database.connect();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, user.getId());
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Book book = new Book(
+                        rs.getString("title"),
+                        rs.getString("author"),
+                        rs.getInt("stock"),
+                        rs.getString("coverUrl"),
+                        rs.getString("description")
+                    );
+                    book.setId(rs.getInt("id"));
+                    borrowedBooks.add(book);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return borrowedBooks;
     }
 }
 

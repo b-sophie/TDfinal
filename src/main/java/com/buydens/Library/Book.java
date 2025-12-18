@@ -26,9 +26,12 @@ public class Book {
 		this.stock = stock;
 		this.coverUrl = coverUrl;
 		this.description = description;
+		System.out.println("Book created\nid: " + this.id + "\ntitle: " + this.title + "\nauthor: " + this.author + "\nstock: " + this.stock);
 	}
 
-
+	public void setId(int id) {
+		this.id = id;
+	}
 
 	public int getId() {
 		return id;
