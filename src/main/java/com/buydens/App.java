@@ -58,16 +58,16 @@ public class App extends Application {
         StackPane totalPane = createStatPane("Total Books", String.valueOf(MainController.countBooks()), "#4CAF50");
 
         
-        // StackPane lentPane = createStatPane("Borrowed", String.valueOf(ManagerEmprunt.countEmpruntsForUser(currentUser)), "#2196F3");
+        StackPane lentPane = createStatPane("Borrowed", String.valueOf(ManagerEmprunt.countEmpruntsForUser(currentUser)), "#2196F3");
         
-        // lentCountLabel = (Label) ((VBox) lentPane.getChildren().get(1)).getChildren().get(0);
+        lentCountLabel = (Label) ((VBox) lentPane.getChildren().get(1)).getChildren().get(0);
 
         StackPane overduePane = createStatPane("Overdue", "0", "#F44336");
-        // statsBox.getChildren().addAll(totalPane, lentPane, overduePane);
+        statsBox.getChildren().addAll(totalPane, lentPane, overduePane);
 
         
         VBox actionBox = new VBox(10);
-        // actionBox.setAlignment(Pos.CENTER_LEFT);
+        actionBox.setAlignment(Pos.CENTER_LEFT);
 
         //------------------------------------------------------------------------------------------
         // Box for borrow/return/add

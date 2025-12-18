@@ -74,7 +74,7 @@ public class Database {
              Statement stmt = conn.createStatement()) {
 
             //stmt.execute(deleteAllUsers);
-            stmt.execute("DROP TABLE IF EXISTS books");
+            // stmt.execute("DROP TABLE IF EXISTS books");
             stmt.execute(createBooks);
             stmt.execute(createUsers);
             stmt.execute(createEmprunts);

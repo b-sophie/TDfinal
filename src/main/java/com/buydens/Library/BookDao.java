@@ -19,20 +19,22 @@ public class BookDao {
     }
 
     public static void insert(Book book) {
-        String sql = "INSERT OR IGNORE INTO books(id, title, author, coverUrl, description) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO books(id, title, author, stock, coverUrl, description) VALUES(?,?,?,?,?,?)";
         //String id = "B" + System.currentTimeMillis();
         try (Connection c = com.buydens.Database.connect();
              PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setInt(1, book.getId());
             ps.setString(2, book.getTitle());
             ps.setString(3, book.getAuthor());
-            ps.setString(4, book.getCoverUrl());
-            ps.setString(5, book.getDescription());
+            ps.setInt(4, book.getStock());
+            ps.setString(5, book.getCoverUrl());
+            ps.setString(6, book.getDescription());
             ps.executeUpdate();
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
     }
+
     public static List<Book> findAll() {
         List<Book> books = new ArrayList<>();
         String sql = "SELECT * FROM books";

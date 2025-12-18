@@ -3,7 +3,8 @@ package com.buydens;
 public class Main {
 
     public static void main(String[] args) {
-        Database.initialize();          
+        Database.initialize(); 
+        System.out.println("Populate books");         
         MainController.populateBooks(); 
         System.out.println("System started.");
 
