@@ -179,25 +179,25 @@ public class App extends Application {
         //     }
         // });
 
-        // bouton Rendre
-        // returnButton.setOnAction(e -> {
-        //     String name = returnField.getText().trim();
-        //     Book selected = MainController.loadBooks().stream()
-        //             .filter(b -> b.getTitle().equalsIgnoreCase(name))
-        //             .findFirst()
-        //             .orElse(null);
+        //bouton Rendre
+        returnButton.setOnAction(e -> {
+            String name = returnField.getText().trim();
+            Book selected = MainController.loadBooks().stream()
+                    .filter(b -> b.getTitle().equalsIgnoreCase(name))
+                    .findFirst()
+                    .orElse(null);
 
-        //     if (selected == null) {
-        //         returnResult.setText("Livre introuvable !");
-        //     } else if (ManagerEmprunt.rendre(selected, currentUser)) {
-        //         returnResult.setText("Livre rendu !");
-        //         returnField.clear();
-        //         updateLentCount();
-        //         refreshBookList(booksContainer);
-        //     } else {
-        //         returnResult.setText("Vous n'avez pas emprunté ce livre");
-        //     }
-        // });
+            if (selected == null) {
+                returnResult.setText("Livre introuvable !");
+            } else if (ManagerEmprunt.rendre(selected, currentUser)) {
+                returnResult.setText("Livre rendu !");
+                returnField.clear();
+                updateLentCount();
+                refreshBookList(booksContainer);
+            } else {
+                returnResult.setText("Vous n'avez pas emprunté ce livre");
+            }
+        });
 
         root.getChildren().addAll(topBar, statsBox, actionBox, booksScroll);
 
