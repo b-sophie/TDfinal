@@ -44,21 +44,28 @@ public class App extends Application {
 
         VBox root = new VBox(20);
         root.setPadding(new javafx.geometry.Insets(20));
+        root.setStyle("-fx-background-color: #ffffff;");
 
         //------------------------------------------------------------------------------------------
-        // Top bar with welcome and logout
+        // Top bar with logo, welcome and logout
+        ImageView logo = new ImageView("file:img/plot_twist_library_white.png");
+        logo.setFitHeight(50);
+        logo.setPreserveRatio(true);
+        logo.setSmooth(true);
+        
         Label welcomeLabel = new Label("Bienvenue, " + currentUser.getPseudo());
-        welcomeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold;");
+        welcomeLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #4850FF;");
 
         Button logoutButton = new Button("Log Out");
-        logoutButton.setStyle("-fx-background-color: linear-gradient(90deg, #ff5252, #ffb300); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 8 28; -fx-font-size: 15px; -fx-effect: none; -fx-border-width: 0;");
-        logoutButton.setOnMouseEntered(ev -> logoutButton.setStyle("-fx-background-color: linear-gradient(90deg, #ff7043, #ffd740); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 8 28; -fx-font-size: 15px; -fx-effect: none; -fx-border-width: 0; -fx-cursor: hand;"));
-        logoutButton.setOnMouseExited(ev -> logoutButton.setStyle("-fx-background-color: linear-gradient(90deg, #ff5252, #ffb300); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 18; -fx-padding: 8 28; -fx-font-size: 15px; -fx-effect: none; -fx-border-width: 0;"));
-        HBox topBar = new HBox();
+        logoutButton.setStyle("-fx-background-color: #4850FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;");
+        logoutButton.setOnMouseEntered(ev -> logoutButton.setStyle("-fx-background-color: #3640CC; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;"));
+        logoutButton.setOnMouseExited(ev -> logoutButton.setStyle("-fx-background-color: #4850FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;"));
+        
+        HBox topBar = new HBox(20);
         topBar.setAlignment(Pos.CENTER_LEFT);
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
-        topBar.getChildren().addAll(welcomeLabel, spacer, logoutButton);
+        topBar.getChildren().addAll(logo, welcomeLabel, spacer, logoutButton);
 
         //------------------------------------------------------------------------------------------
         // Top statistics squares
@@ -91,6 +98,9 @@ public class App extends Application {
 
         HBox returnBox = new HBox(10);
         Button returnButton = new Button("Return");
+        returnButton.setStyle("-fx-background-color: #4850FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;");
+        returnButton.setOnMouseEntered(ev -> returnButton.setStyle("-fx-background-color: #3640CC; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;"));
+        returnButton.setOnMouseExited(ev -> returnButton.setStyle("-fx-background-color: #4850FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;"));
         Label returnResult = new Label();
         returnBox.getChildren().addAll(returnButton);
         returnBox.setAlignment(Pos.CENTER_LEFT);
@@ -100,6 +110,9 @@ public class App extends Application {
         HBox addBox = new HBox(10);
         // TextField addField = new TextField();
         Button addButton = new Button("Add new Book");
+        addButton.setStyle("-fx-background-color: white; -fx-border-radius: 16; -fx-text-fill: #4850FF; -fx-font-weight: bold; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-background-radius: 12; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;");
+        addButton.setOnMouseEntered(ev -> addButton.setStyle("-fx-background-color: #f0f0ff; -fx-border-radius: 16; -fx-text-fill: #4850FF; -fx-font-weight: bold; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-background-radius: 12; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;"));
+        addButton.setOnMouseExited(ev -> addButton.setStyle("-fx-background-color: white; -fx-border-radius: 16; -fx-text-fill: #4850FF; -fx-font-weight: bold; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-background-radius: 12; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;"));
         addBox.getChildren().addAll(addButton);
         addBox.setAlignment(Pos.CENTER_LEFT);   
 
@@ -124,19 +137,26 @@ public class App extends Application {
             Stage addStage = new Stage();
             TextField titleField = new TextField();
             titleField.setPromptText("Title");
+            titleField.setStyle("-fx-background-radius: 10; -fx-background-color: #ffffff; -fx-border-width: 2; -fx-border-radius: 20; -fx-padding: 10 14; -fx-font-size: 15px;");
             TextField authorField = new TextField();
             authorField.setPromptText("Author");
+            authorField.setStyle("-fx-background-radius: 10; -fx-background-color: #ffffff; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-border-radius: 20; -fx-padding: 10 14; -fx-font-size: 15px;");
             TextField stockField = new TextField();
             stockField.setPromptText("Initial Stock");
+            stockField.setStyle("-fx-background-radius: 10; -fx-background-color: #ffffff; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-border-radius: 20; -fx-padding: 10 14; -fx-font-size: 15px;");
             TextField coverField = new TextField();
             coverField.setPromptText("Cover Image URL");
+            coverField.setStyle("-fx-background-radius: 10; -fx-background-color: #ffffff; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-border-radius: 20; -fx-padding: 10 14; -fx-font-size: 15px;");
             TextArea descField = new TextArea();
             descField.setPromptText("Description");
             descField.setPrefRowCount(3);
+            descField.setStyle("-fx-background-radius: 10; -fx-background-color: #ffffff; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-border-radius: 20; -fx-padding: 10 14; -fx-font-size: 15px;");
             Button saveButton = new Button("Save");
-            VBox addRoot = new VBox(10, titleField, authorField, stockField, coverField, descField, saveButton);
+            saveButton.setStyle("-fx-background-color: #4850FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;");
+            VBox addRoot = new VBox(18, titleField, authorField, stockField, coverField, descField, saveButton);
             addRoot.setPadding(new javafx.geometry.Insets(20));
-            Scene addScene = new Scene(addRoot, 400, 420);
+            addRoot.setStyle("-fx-background-color: #ffffff;");
+            Scene addScene = new Scene(addRoot, 400, 450);
             addStage.setScene(addScene);
             addStage.setTitle("Add a Book");
             addStage.show();
@@ -400,7 +420,7 @@ public class App extends Application {
             Label author = new Label("by " + b.getAuthor());
             author.setStyle("-fx-text-fill: #666; -fx-font-size: 13px;");
             Label stock = new Label("Stock: " + b.getStock());
-            stock.setStyle("-fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-font-size: 13px;");
+            stock.setStyle("-fx-text-fill: #4850FF; -fx-font-weight: bold; -fx-font-size: 13px;");
             Label desc = null;
             if (b.getDescription() != null && !b.getDescription().isEmpty()) {
                 desc = new Label(b.getDescription());
@@ -447,11 +467,11 @@ public class App extends Application {
                     dialogCover.setSmooth(true);
                     dialogCover.setStyle("-fx-effect: dropshadow(gaussian, #bdbdbd, 8, 0.2, 0, 2); -fx-background-radius: 8;");
                     Label bookTitle = new Label(b.getTitle());
-                    bookTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #1976D2;");
+                    bookTitle.setStyle("-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #4850FF;");
                     Label bookAuthor = new Label("par " + b.getAuthor());
                     bookAuthor.setStyle("-fx-font-size: 15px; -fx-text-fill: #666;");
                     Label bookStock = new Label("Stock disponible: " + b.getStock());
-                    bookStock.setStyle("-fx-font-size: 14px; -fx-text-fill: #388E3C;");
+                    bookStock.setStyle("-fx-font-size: 14px; -fx-text-fill: #4850FF; -fx-font-weight: bold;");
                     Label bookDesc = null;
                     if (b.getDescription() != null && !b.getDescription().isEmpty()) {
                         bookDesc = new Label(b.getDescription());
@@ -470,14 +490,14 @@ public class App extends Application {
                     ButtonType cancelBtn = new ButtonType("Annuler", ButtonBar.ButtonData.CANCEL_CLOSE);
                     dialog.getDialogPane().getButtonTypes().addAll(borrowBtn, cancelBtn);
 
-                    // Custom styling for buttons (2025 look)
+                    // Custom styling for buttons to match PageConnexion
                     Button okButton = (Button) dialog.getDialogPane().lookupButton(borrowBtn);
                     if (okButton != null) {
-                        okButton.setStyle("-fx-background-color: linear-gradient(90deg, #1976D2, #64B5F6); -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 24;");
+                        okButton.setStyle("-fx-background-color: #4850FF; -fx-text-fill: white; -fx-font-weight: bold; -fx-background-radius: 16; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;");
                     }
                     Button cancelButton = (Button) dialog.getDialogPane().lookupButton(cancelBtn);
                     if (cancelButton != null) {
-                        cancelButton.setStyle("-fx-background-color: #f5f5f5; -fx-text-fill: #1976D2; -fx-font-weight: bold; -fx-background-radius: 8; -fx-padding: 8 24;");
+                        cancelButton.setStyle("-fx-background-color: white; -fx-border-radius: 16; -fx-text-fill: #4850FF; -fx-font-weight: bold; -fx-border-color: #4850FF; -fx-border-width: 2; -fx-background-radius: 12; -fx-padding: 10 32; -fx-font-size: 16px; -fx-cursor: hand;");
                     }
 
                     dialog.setResultConverter(dialogButton -> {
